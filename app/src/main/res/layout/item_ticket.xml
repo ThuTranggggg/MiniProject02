@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.ShoppingApp.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_14">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/space_16">
+
+        <ImageView
+            android:id="@+id/ivTicketPoster"
+            android:layout_width="64dp"
+            android:layout_height="88dp"
+            android:background="@drawable/bg_search_surface"
+            android:contentDescription="@string/product_name_placeholder"
+            android:padding="@dimen/space_10"
+            android:scaleType="fitCenter"
+            android:src="@drawable/product_laptop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_16"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTicketMovieTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_name_placeholder"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTicketTheater"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_6"
+                android:text="@string/category_description_placeholder"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvTicketShowtime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_8"
+                android:text="@string/ticket_showtime_format"
+                android:textColor="@color/price"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTicketSeat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_6"
+                android:text="@string/ticket_seat_format"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tvTicketBookedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4"
+                android:text="@string/ticket_booking_time_format"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
