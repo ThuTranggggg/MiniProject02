@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="product_sort_options">
+        <item>Ten A-Z</item>
+        <item>Gia tang dan</item>
+        <item>Gia giam dan</item>
+    </string-array>
+</resources>
