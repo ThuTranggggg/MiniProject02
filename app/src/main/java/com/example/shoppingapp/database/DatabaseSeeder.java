@@ -5,9 +5,15 @@ import android.util.Log;
 
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.shoppingapp.utils.SeatUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public final class DatabaseSeeder {
 
     private static final String TAG = "DatabaseSeeder";
+    private static final int DEFAULT_TOTAL_SEATS = 20;
 
     private DatabaseSeeder() {
     }
@@ -45,6 +51,7 @@ public final class DatabaseSeeder {
                 insertDefaultShowtimes(database);
                 Log.d(TAG, "Inserted default showtimes because table Showtimes was missing seed data.");
             }
+            normalizeShowtimeSeatCounts(database);
             database.setTransactionSuccessful();
             logCurrentCounts(database, "ensureSeedData");
         } finally {
@@ -75,14 +82,14 @@ public final class DatabaseSeeder {
 
     private static void insertDefaultShowtimes(SupportSQLiteDatabase database) {
         database.execSQL("INSERT OR IGNORE INTO Showtimes (showtimeId, movieId, theaterId, showDate, showTime, roomName, totalSeats, availableSeats) VALUES " +
-                "(1, 1, 1, '2026-03-28', '14:00', 'Hall 1', 150, 150)," +
-                "(2, 1, 1, '2026-03-28', '17:00', 'Hall 2', 120, 120)," +
-                "(3, 2, 2, '2026-03-28', '19:00', 'Hall 1', 100, 100)," +
-                "(4, 3, 3, '2026-03-28', '20:00', 'Hall 1', 80, 80)," +
-                "(5, 4, 1, '2026-03-29', '15:00', 'Hall 3', 130, 130)," +
-                "(6, 2, 2, '2026-03-29', '18:00', 'Hall 2', 120, 120)," +
-                "(7, 1, 3, '2026-03-29', '21:00', 'Hall 2', 90, 90)," +
-                "(8, 3, 1, '2026-03-30', '16:00', 'Hall 1', 150, 150)");
+                "(1, 1, 1, '2026-03-28', '14:00', 'Hall 1', 20, 20)," +
+                "(2, 1, 1, '2026-03-28', '17:00', 'Hall 2', 20, 20)," +
+                "(3, 2, 2, '2026-03-28', '19:00', 'Hall 1', 20, 20)," +
+                "(4, 3, 3, '2026-03-28', '20:00', 'Hall 1', 20, 20)," +
+                "(5, 4, 1, '2026-03-29', '15:00', 'Hall 3', 20, 20)," +
+                "(6, 2, 2, '2026-03-29', '18:00', 'Hall 2', 20, 20)," +
+                "(7, 1, 3, '2026-03-29', '21:00', 'Hall 2', 20, 20)," +
+                "(8, 3, 1, '2026-03-30', '16:00', 'Hall 1', 20, 20)");
     }
 
     private static void insertDefaultCategories(SupportSQLiteDatabase database) {
@@ -102,6 +109,42 @@ public final class DatabaseSeeder {
             return 0;
         } finally {
             cursor.close();
+        }
+    }
+
+    private static void normalizeShowtimeSeatCounts(SupportSQLiteDatabase database) {
+        Map<Integer, Integer> validBookedSeatCounts = new HashMap<>();
+        Cursor ticketCursor = database.query("SELECT showtimeId, seatNumber FROM Tickets");
+        try {
+            int showtimeIdIndex = ticketCursor.getColumnIndexOrThrow("showtimeId");
+            int seatNumberIndex = ticketCursor.getColumnIndexOrThrow("seatNumber");
+            while (ticketCursor.moveToNext()) {
+                int showtimeId = ticketCursor.getInt(showtimeIdIndex);
+                String seatNumber = ticketCursor.getString(seatNumberIndex);
+                if (!SeatUtils.isSeatNumberValid(seatNumber, DEFAULT_TOTAL_SEATS)) {
+                    continue;
+                }
+                Integer currentCount = validBookedSeatCounts.get(showtimeId);
+                validBookedSeatCounts.put(showtimeId, currentCount == null ? 1 : currentCount + 1);
+            }
+        } finally {
+            ticketCursor.close();
+        }
+
+        Cursor showtimeCursor = database.query("SELECT showtimeId FROM Showtimes");
+        try {
+            int showtimeIdIndex = showtimeCursor.getColumnIndexOrThrow("showtimeId");
+            while (showtimeCursor.moveToNext()) {
+                int showtimeId = showtimeCursor.getInt(showtimeIdIndex);
+                int bookedSeats = Math.min(validBookedSeatCounts.getOrDefault(showtimeId, 0), DEFAULT_TOTAL_SEATS);
+                int availableSeats = DEFAULT_TOTAL_SEATS - bookedSeats;
+                database.execSQL(
+                        "UPDATE Showtimes SET totalSeats = ?, availableSeats = ? WHERE showtimeId = ?",
+                        new Object[]{DEFAULT_TOTAL_SEATS, availableSeats, showtimeId}
+                );
+            }
+        } finally {
+            showtimeCursor.close();
         }
     }
 

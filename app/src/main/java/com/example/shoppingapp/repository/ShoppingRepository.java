@@ -20,9 +20,9 @@ import com.example.shoppingapp.model.Ticket;
 import com.example.shoppingapp.model.TicketDetail;
 import com.example.shoppingapp.model.User;
 import com.example.shoppingapp.utils.Constants;
+import com.example.shoppingapp.utils.SeatUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -116,6 +116,19 @@ public class ShoppingRepository {
         });
     }
 
+    public void getBookedSeatNumbers(int showtimeId, DataCallback<List<String>> callback) {
+        executeDataTask(callback, "getBookedSeatNumbers", () -> {
+            Showtime showtime = showtimeDao.getShowtimeById(showtimeId);
+            if (showtime == null) {
+                postError(callback, "Không tìm thấy lịch chiếu.");
+                return;
+            }
+
+            List<String> bookedSeats = ticketDao.getBookedSeatNumbersByShowtime(showtimeId);
+            postSuccess(callback, bookedSeats);
+        });
+    }
+
     public void bookTicket(int userId, int showtimeId, String seatNumber, DataCallback<TicketDetail> callback) {
         executeDataTask(callback, "bookTicket", () -> {
             if (!isValidUser(userId)) {
@@ -123,7 +136,7 @@ public class ShoppingRepository {
                 return;
             }
 
-            String normalizedSeat = normalizeSeatNumber(seatNumber);
+            String normalizedSeat = SeatUtils.normalizeSeatNumber(seatNumber);
             if (TextUtils.isEmpty(normalizedSeat)) {
                 postError(callback, "Vui lòng nhập số ghế.");
                 return;
@@ -142,6 +155,11 @@ public class ShoppingRepository {
 
                     if (showtime.getAvailableSeats() <= 0) {
                         errorMessage[0] = "Lịch chiếu này đã hết chỗ.";
+                        return;
+                    }
+
+                    if (!SeatUtils.isSeatNumberValid(normalizedSeat, showtime.getTotalSeats())) {
+                        errorMessage[0] = "Ghế " + normalizedSeat + " không tồn tại trong phòng chiếu này.";
                         return;
                     }
 
@@ -187,13 +205,6 @@ public class ShoppingRepository {
             }
             postSuccess(callback, ticketDao.getTicketDetailsByUser(userId));
         });
-    }
-
-    private String normalizeSeatNumber(String seatNumber) {
-        if (seatNumber == null) {
-            return "";
-        }
-        return seatNumber.trim().replace(" ", "").toUpperCase(Locale.ROOT);
     }
 
     private boolean isValidUser(int userId) {
