@@ -123,9 +123,16 @@
     <string name="book_available_seats">Ghế còn lại: %1$d/%2$d</string>
     <string name="book_showtime_placeholder">Ngày chiếu • Phòng</string>
     <string name="book_available_seats_placeholder">Ghế còn lại: 0/0</string>
-    <string name="hint_seat_number">Nhập ghế, ví dụ A1</string>
+    <string name="book_available_seat_list_title">Sơ đồ ghế</string>
+    <string name="book_loading_seats">Đang tải trạng thái ghế...</string>
+    <string name="book_select_seat_hint">Xanh nhạt: ghế trống, đỏ: đã đặt, xanh đậm: đang chọn.</string>
+    <string name="book_no_available_seats">Không còn ghế trống để chọn.</string>
+    <string name="hint_seat_number">Chọn bên dưới hoặc nhập ghế, ví dụ A1</string>
     <string name="seat_required">Vui lòng nhập số ghế.</string>
+    <string name="seat_invalid">Ghế %1$s không còn trống hoặc không tồn tại.</string>
     <string name="seat_label">Số ghế</string>
+    <string name="available_seat_content_description">Ghế %1$s, còn trống</string>
+    <string name="booked_seat_content_description">Ghế %1$s, đã đặt</string>
     <string name="book_ticket_success">Đặt vé thành công.</string>
     <string name="showtime_not_found">Không tìm thấy lịch chiếu.</string>
     <string name="ticket_list_title">Vé của tôi</string>

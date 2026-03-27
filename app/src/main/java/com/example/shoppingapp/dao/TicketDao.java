@@ -33,6 +33,9 @@ public interface TicketDao {
     @Query("SELECT * FROM Tickets WHERE showtimeId = :showtimeId ORDER BY seatNumber ASC")
     List<Ticket> getTicketsByShowtime(int showtimeId);
 
+    @Query("SELECT seatNumber FROM Tickets WHERE showtimeId = :showtimeId ORDER BY seatNumber ASC")
+    List<String> getBookedSeatNumbersByShowtime(int showtimeId);
+
     @Query("SELECT * FROM Tickets WHERE showtimeId = :showtimeId AND seatNumber = :seatNumber")
     Ticket getTicketBySeatInShowtime(int showtimeId, String seatNumber);
 
